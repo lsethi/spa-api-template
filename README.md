@@ -8,9 +8,30 @@ The site you're working with is called **awsumlink**. The database behind it has
 
 The DB schemas:
 
-users(id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT);
-lists(id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL, name TEXT, last_updated INTEGER, FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE);
-links(id INTEGER PRIMARY KEY, list_id INTEGER NOT NULL, url TEXT, name TEXT, description TEXT, last_updated INTEGER, FOREIGN KEY(list_id) REFERENCES lists(id) ON DELETE CASCADE);
+```sql
+users(
+  id INTEGER PRIMARY KEY,
+  username TEXT UNIQUE,
+  password TEXT
+);
+
+lists(
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  name TEXT, last_updated INTEGER,
+  FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+links(
+  id INTEGER PRIMARY KEY,
+  list_id INTEGER NOT NULL,
+  url TEXT,
+  name TEXT,
+  description TEXT,
+  last_updated INTEGER,
+  FOREIGN KEY(list_id) REFERENCES lists(id) ON DELETE CASCADE
+);
+```
 
 There is currently no sign-in mechanism to store sessions or users. You can implement this yourself, but the core idea behind this template is to allow you to work with a readily accessible API and build out a resulting view from it, so no emphasis has been placed on typical concerns like session variables, security, etc.
 
@@ -68,6 +89,8 @@ Returns:
 ```
 
 ### POST `/user`
+
+
 
 ### DELETE `/user`
 
