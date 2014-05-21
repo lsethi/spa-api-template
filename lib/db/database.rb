@@ -56,7 +56,7 @@ module AwsumLink
     # User Methods
     def create_user username, password
       begin
-        @db.execute "INSERT INTO users(username, password) VALUES('#{username}', '#{password}')"
+        @db.execute "INSERT INTO users(username, password) VALUES(\"#{username}\", \"#{password}\")"
         return true
       rescue SQLite3::Exception => e
         return e
@@ -65,7 +65,7 @@ module AwsumLink
 
     def get_user id_or_name
       if id_or_name.is_a? String
-        db_hash = (@db.execute "SELECT * FROM users WHERE username='#{id_or_name}'")[0]
+        db_hash = (@db.execute "SELECT * FROM users WHERE username=\"#{id_or_name}\"")[0]
       elsif id_or_name.is_a? Integer
         db_hash = (@db.execute "SELECT * FROM users WHERE id=#{id_or_name}")[0]
       end
@@ -149,7 +149,7 @@ module AwsumLink
       begin
         timestamp = Time.now.to_i
         @db.execute "INSERT INTO links(list_id, url, name, description, last_updated)"\
-                    "VALUES(#{list_id}, '#{url}', '#{name}', '#{description}', #{timestamp})"
+                    "VALUES(#{list_id}, \"#{url}\", \"#{name}\", \"#{description}\", #{timestamp})"
         return true
       rescue SQLite3::Exception => e
         return e

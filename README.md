@@ -33,7 +33,7 @@ links(
 );
 ```
 
-There is currently no sign-in mechanism to store sessions or users. You can implement this yourself, but the core idea behind this template is to allow you to work with a readily accessible API and build out a resulting view from it, so no emphasis has been placed on typical concerns like session variables, security, etc.
+There is currently no sign-in mechanism to store sessions or users. You can implement this yourself, but the core idea behind this template is to allow you build out a dynamic frontend interacting with a readily available API. Therefore no emphasis has been placed on typical concerns like session variables, security, etc.
 
 This means that while you can clone and mess around with this site, it's NOT ready to go live! Don't put it on the internet!
 
@@ -90,9 +90,11 @@ Returns:
 
 ### POST `/user`
 
+Create a new user. You must pass `username` and `password` as POST parameters. Returns `{ "status": 200 }` on success.
 
+### DELETE `/user/:id`
 
-### DELETE `/user`
+Delete a user at the specified ID.
 
 ### GET `/user/:user_id/lists`
 
@@ -119,7 +121,7 @@ Example:
 
 ### GET `/lists`
 
-Returns all lists.
+Returns all available lists.
 
 Example:
 
@@ -146,12 +148,79 @@ Example:
 ]
 ```
 
+### GET `/list/:id`
+
+Returns a specific list, including its links.
+
+Example:
+
+```json
+{
+  "id": 2,
+  "user_id": 1,
+  "name": "Second List",
+  "last_updated": 1400637329,
+  "links": [
+    {
+      "id": 1,
+      "list_id": 2,
+      "url": "http://www.just.com/",
+      "name": "Jared's Renamed Link",
+      "description": "Yeah! OK!",
+      "last_updated": 1400686875
+    }
+  ]
+}
+```
+
 ### POST `/list`
 
-### DELETE `/list`
+Create a new list. Requires POST parameters `name` and `user_id`. Returns `{ "status": 200 }` on success.
+
+### PUT `/list/:id`
+
+Update a list's values. You can include the parameters `user_id` and `name`. This means that you can rename and reassign lists to different users if you choose. Returns `{ "status": 200 }` on success.
+
+### DELETE `/list/:id`
+
+Delete a list. Returns `{ "status": 200 }` on success.
+
+### GET `/links`
+
+Returns all available links.
+
+Example:
+
+```json
+[
+  {
+    "id": 1,
+    "list_id": 2,
+    "url": "http://www.just.com/",
+    "name": "Jared's Renamed Link",
+    "description": "Yeah! OK!",
+    "last_updated": 1400686875
+  },
+  {
+    "id": 2,
+    "list_id": 1,
+    "url": "http://www.google.com/",
+    "name": "List One's Link",
+    "description": "This is a link to Google!",
+    "last_updated": 1400687753
+  }
+]
+
+```
 
 ### POST `/link`
 
-### PUT `/link`
+Create a link. Requires all POST parameters `list_id`, `url`, `name`, and `description`. Returns `{ "status": 200 }` on success.
+
+### PUT `/link/:id`
+
+Update a link. Requires at least one POST parameter out of `list_id`, `url`, `name`, and `description`. Returns `{ "status": 200 }` on success.
 
 ### DELETE `/link/:id`
+
+Delete a link. Returns `{ "status": 200 }` on success.
