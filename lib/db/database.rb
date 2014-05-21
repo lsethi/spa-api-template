@@ -26,6 +26,32 @@ module AwsumLink
       return results
     end
 
+    # Constructs an update query on certain columns based on a passed hash
+    # of params, which is compared against a hash of desired_params. If both
+    # hashes share keys, then a column update is added to the query.
+    #
+    # NOTE: Does NOT add a " WHERE" query.
+    def construct_update_query_by_params table, desired_params, params
+      query = "UPDATE #{table} SET "
+      desired_params.each do |key|
+        # This starts as a symbol so we need to convert to a string
+        # so we can do type comparisons. Pretty sure I'm mauling Ruby
+        # right here.
+        key_as_string = key.to_s
+        if params.has_key?(key_as_string)
+          if key_as_string.to_i.to_s == key_as_string
+            # Don't put quotation marks around integers
+            query += "#{key.to_s}=#{params[key]}, "
+          else
+            query += "#{key.to_s}=\"#{params[key]}\", "
+          end
+        end
+      end
+      # Strip trailing ", "
+      query = query[0..-3]
+      return query
+    end
+
     public
     # User Methods
     def create_user username, password
@@ -92,6 +118,20 @@ module AwsumLink
       end
     end
 
+    def update_list id, params
+      begin
+        params["last_updated"] = Time.now.to_i
+        query = self.construct_update_query_by_params\
+                  "lists", [:user_id, :name, :last_updated], params
+        query += " WHERE id=#{id}"
+        puts query
+        @db.execute query
+        return true
+      rescue SQLite3::Exception => e
+        return e
+      end
+    end
+
     # Links Methods
     def get_links_from_list id
       return self.sanitize_sqlite_hash_array @db.execute "SELECT * FROM links WHERE list_id=#{id}"
@@ -99,6 +139,10 @@ module AwsumLink
 
     def get_link id
       return self.sanitize_sqlite_hash (@db.execute "SELECT * FROM links WHERE id=#{id}")[0]
+    end
+
+    def get_links
+      return self.sanitize_sqlite_hash_array @db.execute "SELECT * FROM links"
     end
 
     def create_link list_id, url, name, description
@@ -115,16 +159,12 @@ module AwsumLink
     def update_link id, params
       # TODO: implement last_updated for parent list as well
       begin
-        timestamp = Time.now.to_i
-        query     = "UPDATE links SET "
-        puts params
-        [:url, :name, :description].each do |key|
-          if params.has_key?(key.to_s)
-            query += "#{key.to_s}='#{params[key]}', "
-          end
-        end
-        # Strip trailing ", "
-        query = query[0..-3] + " WHERE id=#{id}"
+        params["last_updated"] = Time.now.to_i
+        query = self.construct_update_query_by_params\
+                  "links", \
+                  [:list_id, :url, :name, :description, :last_updated], \
+                  params
+        query += " WHERE id=#{id}"
         puts query
         @db.execute query
         return true

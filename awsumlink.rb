@@ -38,25 +38,18 @@ post '/user' do
   end
 end
 
-delete '/user' do
+delete '/user/:id' do
   content_type :json
-  if params.key?('id')
-    result = AwsumLink::Users.delete_user(params[:id])
-    if result == true
-      {
-        :status => 200
-      }.to_json
-    else
-      content_type :json
-      {
-        :status => 500,
-        :error  => result
-      }.to_json
-    end
-  else
+  result = AwsumLink::Users.delete_user(params[:id])
+  if result == true
     {
-      :status => 400,
-      :error  => 'Invalid parameters.'
+      :status => 200
+    }.to_json
+  else
+    content_type :json
+    {
+      :status => 500,
+      :error  => result
     }.to_json
   end
 end
@@ -96,16 +89,15 @@ post '/list' do
   end
 end
 
-delete '/list' do
+put '/list/:id' do
   content_type :json
-  if params.key?('id')
-    result = AwsumLink::Lists.delete_list(params[:id])
+  if params.key?('user_id') or params.key?('name')
+    result = AwsumLink::Lists.update_list params[:id], params
     if result == true
       {
         :status => 200
       }.to_json
     else
-      content_type :json
       {
         :status => 500,
         :error  => result
@@ -115,12 +107,32 @@ delete '/list' do
     {
       :status => 400,
       :error  => 'Invalid parameters.'
+    }
+  end
+end
+
+delete '/list/:id' do
+  content_type :json
+  result = AwsumLink::Lists.delete_list(params[:id])
+  if result == true
+    {
+      :status => 200
+    }.to_json
+  else
+    content_type :json
+    {
+      :status => 500,
+      :error  => result
     }.to_json
   end
 end
 
 # Links - note that returning a list of links is done with /list/:user_id.
 #         these methods are for manipulating individual items
+get '/links' do
+  AwsumLink::Links.get_links.to_json
+end
+
 post '/link' do
   content_type :json
   if params.key?('list_id') and params.key?('url') and \

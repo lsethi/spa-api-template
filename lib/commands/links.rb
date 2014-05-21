@@ -4,6 +4,10 @@ module AwsumLink
       AwsumLink.db.get_link id
     end
 
+    def self.get_links
+      AwsumLink.db.get_links
+    end
+
     def self.create_link list_id, url, name, description
       AwsumLink.db.create_link list_id, url, name, description
     end

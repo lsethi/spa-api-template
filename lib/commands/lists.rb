@@ -22,5 +22,9 @@ module AwsumLink
     def self.delete_list id
       AwsumLink.db.delete_list id
     end
+
+    def self.update_list id, params
+      AwsumLink.db.update_list id, params
+    end
   end
 end
