@@ -76,7 +76,7 @@ module AwsumLink
     def create_list user_id, name
       begin
         timestamp = Time.now.to_i
-        @db.execute "INSERT INTO lists(user_id, name, last_updated) VALUES(#{user_id}, '#{name}', #{timestamp})"
+        @db.execute "INSERT INTO lists(user_id, name, last_updated) VALUES(#{user_id}, \"#{name}\", #{timestamp})"
         return true
       rescue SQLite3::Exception => e
         return e
